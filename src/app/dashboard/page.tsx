@@ -1,11 +1,12 @@
 "use client";
 
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 import { useState, useEffect } from "react";
 import {
-  Mic, FileText, Volume2, Plus, FolderOpen,
-  LogOut, ChevronRight, Gauge, HardDrive, FileImage,
+  Mic, Volume2, Plus, FolderOpen,
+  ChevronRight, Gauge, HardDrive, FileImage,
 } from "lucide-react";
+import { Navbar } from "@/components/layout/navbar";
 
 interface Project {
   id: string;
@@ -79,26 +80,7 @@ export default function DashboardPage() {
   // ── 已登录：Dashboard ──
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="border-b border-gray-200 bg-white">
-        <div className="mx-auto max-w-6xl flex items-center justify-between px-6 py-3">
-          <div className="flex items-center gap-3">
-            <h1 className="text-lg font-bold text-brand-700">Creative Media</h1>
-            <span className="text-xs text-gray-400 hidden sm:inline">创媒</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              {user.image && (
-                <img src={user.image} alt="" className="w-7 h-7 rounded-full" />
-              )}
-              <span className="text-sm text-gray-700 hidden sm:inline">{user.name}</span>
-            </div>
-            <button onClick={() => signOut()} className="text-gray-400 hover:text-gray-600" title="Sign out">
-              <LogOut className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       <main className="mx-auto max-w-6xl px-6 py-8">
         {/* Quota Cards */}

@@ -3,7 +3,12 @@ import { db } from "@/lib/db";
 import { put } from "@vercel/blob";
 import OpenAI from "openai";
 
-const openai = new OpenAI();
+// 延迟初始化，避免构建时缺少 API KEY 报错
+let _openai: OpenAI | null = null;
+function getOpenAI() {
+  if (!_openai) _openai = new OpenAI();
+  return _openai;
+}
 
 // ═══════════════════════════════════════
 // 引擎 B 核心：音频转写异步任务
@@ -35,7 +40,7 @@ export const transcribeFunction = inngest.createFunction(
       const audioFile = new File([audioBuffer], "audio.mp3", { type: "audio/mpeg" });
 
       // 调用 OpenAI Whisper API
-      const result = await openai.audio.transcriptions.create({
+      const result = await getOpenAI().audio.transcriptions.create({
         model: "whisper-1",
         file: audioFile,
         language: language === "auto" ? undefined : language,
