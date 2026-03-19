@@ -1,0 +1,42 @@
+{
+  "common": {
+    "appName": "Creative Media",
+    "tagline": "\u4ece\u7075\u611f\u5230\u53d1\u5e03\uff0c\u4e00\u4e2a\u5e73\u53f0\u5168\u90e8\u641e\u5b9a\u3002",
+    "login": "\u4f7f\u7528 Google \u767b\u5f55",
+    "logout": "\u9000\u51fa\u767b\u5f55",
+    "dashboard": "\u5de5\u4f5c\u53f0",
+    "projects": "\u9879\u76ee",
+    "settings": "\u8bbe\u7f6e",
+    "create": "\u521b\u5efa",
+    "delete": "\u5220\u9664",
+    "cancel": "\u53d6\u6d88",
+    "save": "\u4fdd\u5b58",
+    "upload": "\u4e0a\u4f20",
+    "download": "\u4e0b\u8f7d",
+    "loading": "\u52a0\u8f7d\u4e2d..."
+  },
+  "dashboard": {
+    "welcome": "\u6b22\u8fce\u56de\u6765\uff0c{name}",
+    "recentProjects": "\u6700\u8fd1\u9879\u76ee",
+    "noProjects": "\u8fd8\u6ca1\u6709\u9879\u76ee\u3002\u521b\u5efa\u4f60\u7684\u7b2c\u4e00\u4e2a\u5427\uff01",
+    "createProject": "\u65b0\u5efa\u9879\u76ee",
+    "quota": {
+      "audio": "\u97f3\u9891\u5904\u7406\u65f6\u957f",
+      "storage": "\u5b58\u50a8\u7a7a\u95f4",
+      "pdf": "PDF \u9875\u6570",
+      "used": "\u5df2\u7528 {used} / {limit}"
+    }
+  },
+  "engines": {
+    "audioToText": "\u97f3\u9891\u8f6c\u6587\u5b57",
+    "textToAudio": "\u6587\u5b57\u8f6c\u8bed\u97f3",
+    "audioToTextDesc": "\u5c06\u97f3\u9891\u8f6c\u6362\u4e3a\u6587\u7a3f\u3001\u5b57\u5e55\uff0c\u652f\u6301\u591a\u8bed\u8a00\u7ffb\u8bd1",
+    "textToAudioDesc": "\u4ece\u6587\u672c\u751f\u6210\u591a\u8bed\u8a00\u914d\u97f3"
+  },
+  "project": {
+    "assets": "\u7d20\u6750\u5e93",
+    "workflow": "\u5de5\u4f5c\u6d41",
+    "settings": "\u8bbe\u7f6e",
+    "emptyAssets": "\u8fd8\u6ca1\u6709\u7d20\u6750\u3002\u4e0a\u4f20\u6587\u4ef6\u6216\u8fd0\u884c\u5f15\u64ce\u5f00\u59cb\u521b\u4f5c\u5427\u3002"
+  }
+}

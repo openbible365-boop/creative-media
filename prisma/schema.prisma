@@ -1,0 +1,197 @@
+// Creative Media — Database Schema
+// 三张核心表: User / Project / Asset
+// 外加 NextAuth 所需的 Account / Session 表
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL") // Vercel Postgres 需要直连 URL 用于迁移
+}
+
+// ═══════════════════════════════════════
+// NextAuth.js 用户认证相关表
+// ═══════════════════════════════════════
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+
+  // 订阅与额度
+  plan          Plan      @default(BASIC)
+  // 音频处理额度（分钟），每月重置
+  audioMinutesUsed  Int   @default(0)
+  audioMinutesLimit Int   @default(60) // Basic: 60, Pro: 600, Ultra: 2000
+  // 存储空间（字节）
+  storageUsed       BigInt @default(0)
+  storageLimit      BigInt @default(2147483648) // 2GB default
+  // PDF 页数额度
+  pdfPagesUsed      Int   @default(0)
+  pdfPagesLimit     Int   @default(30) // Basic: 30, Pro: 500, Ultra: unlimited
+  // Stripe
+  stripeCustomerId  String?   @unique
+  stripeSubId       String?
+
+  // 关系
+  accounts  Account[]
+  sessions  Session[]
+  projects  Project[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+// ═══════════════════════════════════════
+// 核心业务表
+// ═══════════════════════════════════════
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  locale      String   @default("en") // 项目默认语言: en, zh, ko
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assets      Asset[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@map("projects")
+}
+
+model Asset {
+  id          String    @id @default(cuid())
+  name        String    // 文件显示名
+  type        AssetType // 文件类型
+  mimeType    String?   // MIME type
+  size        BigInt    @default(0) // 文件大小（字节）
+  blobUrl     String    // Vercel Blob 存储 URL
+  metadata    Json?     // 灵活元数据（时长、分辨率、语言等）
+
+  // 来源追踪
+  sourceEngine Engine?  // 由哪个引擎生成
+  parentId     String?  // 父素材 ID（如：从音频生成的文稿）
+  parent       Asset?   @relation("AssetLineage", fields: [parentId], references: [id])
+  children     Asset[]  @relation("AssetLineage")
+
+  // 所属项目
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([type])
+  @@map("assets")
+}
+
+// ═══════════════════════════════════════
+// 异步任务追踪表
+// ═══════════════════════════════════════
+
+model Task {
+  id          String     @id @default(cuid())
+  type        TaskType
+  status      TaskStatus @default(PENDING)
+  progress    Int        @default(0) // 0-100
+  input       Json?      // 任务输入参数
+  output      Json?      // 任务结果
+  error       String?    // 错误信息
+
+  projectId   String
+  assetId     String?    // 关联的素材 ID
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([projectId])
+  @@index([status])
+  @@map("tasks")
+}
+
+// ═══════════════════════════════════════
+// 枚举类型
+// ═══════════════════════════════════════
+
+enum Plan {
+  BASIC
+  PRO
+  ULTRA
+}
+
+enum AssetType {
+  AUDIO        // 音频文件 (mp3, wav, m4a)
+  VIDEO        // 视频文件 (mp4, webm)
+  TRANSCRIPT   // 转写文稿 (json)
+  SUBTITLE     // 字幕文件 (srt, vtt)
+  IMAGE        // 图片 (png, jpg) — 包括 PDF 拆分的图片
+  DOCUMENT     // 文档 (pdf, txt, md)
+  TTS_AUDIO    // TTS 生成的音频
+}
+
+enum Engine {
+  YOUTUBE      // 引擎 A
+  AUDIO_TO_TEXT // 引擎 B
+  TEXT_TO_AUDIO // 引擎 C
+  VIDEO_COMPOSE // 引擎 D
+  DISTRIBUTION  // 引擎 E
+  PDF_PARSER    // PDF 解析
+  EXTERNAL      // 第三方平台导入
+}
+
+enum TaskType {
+  TRANSCRIBE   // 音频转文字
+  TRANSLATE    // 翻译
+  TTS          // 文字转语音
+  PDF_PARSE    // PDF 解析
+  VIDEO_RENDER // 视频渲染
+}
+
+enum TaskStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}

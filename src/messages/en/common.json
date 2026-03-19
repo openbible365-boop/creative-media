@@ -1,0 +1,42 @@
+{
+  "common": {
+    "appName": "Creative Media",
+    "tagline": "From inspiration to publication, all in one platform.",
+    "login": "Sign in with Google",
+    "logout": "Sign out",
+    "dashboard": "Dashboard",
+    "projects": "Projects",
+    "settings": "Settings",
+    "create": "Create",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "save": "Save",
+    "upload": "Upload",
+    "download": "Download",
+    "loading": "Loading..."
+  },
+  "dashboard": {
+    "welcome": "Welcome back, {name}",
+    "recentProjects": "Recent projects",
+    "noProjects": "No projects yet. Create your first one!",
+    "createProject": "New project",
+    "quota": {
+      "audio": "Audio minutes",
+      "storage": "Storage",
+      "pdf": "PDF pages",
+      "used": "{used} / {limit} used"
+    }
+  },
+  "engines": {
+    "audioToText": "Audio to text",
+    "textToAudio": "Text to audio",
+    "audioToTextDesc": "Convert audio to transcripts, subtitles, and translations",
+    "textToAudioDesc": "Generate voiceover from text in multiple languages"
+  },
+  "project": {
+    "assets": "Assets",
+    "workflow": "Workflow",
+    "settings": "Settings",
+    "emptyAssets": "No assets yet. Upload a file or run an engine to get started."
+  }
+}
