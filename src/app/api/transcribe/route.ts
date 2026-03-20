@@ -11,7 +11,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { assetId, language, outputFormat } = await req.json();
+  const {
+    assetId,
+    language,
+    outputFormat,
+    subtitleFormat,
+    targetLanguages,
+  } = await req.json();
 
   if (!assetId) {
     return NextResponse.json({ error: "Missing assetId" }, { status: 400 });
@@ -26,8 +32,11 @@ export async function POST(req: NextRequest) {
     include: { project: true },
   });
 
-  if (!asset || asset.type !== "AUDIO") {
-    return NextResponse.json({ error: "Audio asset not found" }, { status: 404 });
+  if (!asset || (asset.type !== "AUDIO" && asset.type !== "VIDEO")) {
+    return NextResponse.json(
+      { error: "Audio or video asset not found" },
+      { status: 404 }
+    );
   }
 
   // 检查音频处理额度
@@ -51,8 +60,10 @@ export async function POST(req: NextRequest) {
       assetId: asset.id,
       input: {
         blobUrl: asset.blobUrl,
-        language: language || "auto", // auto = 自动检测语言
-        outputFormat: outputFormat || "transcript", // transcript | subtitle
+        language: language || "auto",
+        outputFormat: outputFormat || "transcript",
+        subtitleFormat: subtitleFormat || "srt",
+        targetLanguages: targetLanguages || [],
       },
     },
   });
@@ -68,12 +79,18 @@ export async function POST(req: NextRequest) {
       blobUrl: asset.blobUrl,
       language: language || "auto",
       outputFormat: outputFormat || "transcript",
+      subtitleFormat: subtitleFormat || "srt",
+      targetLanguages: targetLanguages || [],
     },
   });
 
-  return NextResponse.json({
-    taskId: task.id,
-    status: "PENDING",
-    message: "Transcription task submitted. Poll /api/tasks/{taskId} for progress.",
-  }, { status: 202 });
+  return NextResponse.json(
+    {
+      taskId: task.id,
+      status: "PENDING",
+      message:
+        "Transcription task submitted. Poll /api/tasks/{taskId} for progress.",
+    },
+    { status: 202 }
+  );
 }

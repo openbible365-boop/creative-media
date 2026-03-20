@@ -3,6 +3,7 @@
 import { useSession, signOut } from "next-auth/react";
 import { LogOut, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface BreadcrumbItem {
   label: string;
@@ -22,8 +23,8 @@ export function Navbar({ breadcrumbs }: NavbarProps) {
       <div className="mx-auto max-w-6xl flex items-center justify-between px-6 py-3">
         <div className="flex items-center gap-3 min-w-0">
           <Link href="/dashboard" className="flex items-center gap-2 flex-shrink-0">
+            <Image src="/logo.png" alt="Creative Media" width={28} height={28} className="flex-shrink-0" />
             <h1 className="text-lg font-bold text-brand-700">Creative Media</h1>
-            <span className="text-xs text-gray-400 hidden sm:inline">创媒</span>
           </Link>
 
           {breadcrumbs && breadcrumbs.length > 0 && (

@@ -70,8 +70,12 @@ export function FileUpload({
             if (xhr.status === 201) {
               resolve(JSON.parse(xhr.responseText));
             } else {
-              const errBody = JSON.parse(xhr.responseText);
-              reject(new Error(errBody.error || "Upload failed"));
+              try {
+                const errBody = JSON.parse(xhr.responseText);
+                reject(new Error(errBody.error || "Upload failed"));
+              } catch {
+                reject(new Error(`Upload failed (${xhr.status})`));
+              }
             }
           };
 
